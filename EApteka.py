@@ -7,4 +7,4 @@ def parse_info(name):
 
 
 if __name__ == '__main__':
-    print(parse_info('РђСЃРїРёСЂРёРЅ РљР°СЂРґРёРѕ С‚Р°Р± 100РјРі в„–20'))
+    print(parse_info('Аспирин Кардио таб 100мг №20'))
