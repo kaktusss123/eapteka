@@ -44,17 +44,18 @@ def search(bot, id, message):
 def parse_info(name):
     product = html.fromstring(get('http://e-apteka.md/products?keyword=' + name).text).xpath('//div[@class="product"]')
     image = product.xpath('./div[@class="image"]/a/@href')
+    print(image)
     try:
         producer = product.xpath('./div[@style="width:245px;height:106px;float:left;"]/br')[1]
     except:
         producer = None
+    print(producer)
     active = product.xpath('./div[@class="description yobject-marked"]/text()')
-    print(name, image, producer, active)
+    print(active)
 
 
 def choice(bot, id, message):
     global TEMP_SEARCH_RESULTS
-    print(TEMP_SEARCH_RESULTS)
     if not message.strip().isdigit():
         bot.send_message(id, strings.not_a_number)
     elif not 0 <= int(message) < len(TEMP_SEARCH_RESULTS[id]):
