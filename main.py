@@ -42,7 +42,7 @@ def search(bot, id, message):
 
 
 def parse_info(name):
-    product = html.fromstring(get('http://e-apteka.md/products?keyword=' + name).text).xpath('//div[@class="product"]')
+    product = html.fromstring(get('http://e-apteka.md/products?keyword=' + name).text).xpath('//div[@class="product"]')[0]
     image = product.xpath('./div[@class="image"]/a/@href')
     print(image)
     try:
