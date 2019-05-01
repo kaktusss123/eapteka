@@ -35,7 +35,7 @@ def search(bot, id, message):
         USERS[id] = choice
         s = strings.search_results_header.format(message)
         for i, n in enumerate((i['name'] for i in resp), 1):
-            s += f'{i}) {n}\n'
+            s += '{}) {}\n'.format(i, n)
         s += strings.search_results_bottom
         TEMP_SEARCH_RESULTS[id] = resp
         bot.send_message(id, s)
