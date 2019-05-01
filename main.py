@@ -87,12 +87,12 @@ def start(bot):
 
 
 if __name__ == '__main__':
-    try:
+    # try:
         bot = BotHandler(TOKEN)
         while 1:
             start(bot)
-    except:
-        print('exception')
-        bot = BotHandler(TOKEN)
-        while 1:
-            start(bot)
+    # except:
+    #     print('exception')
+    #     bot = BotHandler(TOKEN)
+    #     while 1:
+    #         start(bot)
