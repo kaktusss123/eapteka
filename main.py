@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import strings
 from Bot import *
 from config import TOKEN, MY_ID
@@ -8,7 +9,9 @@ from lxml import html
 OFFSET = 0
 USERS = {}
 CART = {}
+SELECTED_ITEM = {}
 TEMP_SEARCH_RESULTS = {}
+SEARCH_QUERY = {}
 
 
 def main_menu(bot, id, message):
@@ -17,7 +20,7 @@ def main_menu(bot, id, message):
     if message == '/start':
         bot.send_message(id, strings.hello_1)
         bot.send_message(id, strings.hello_2, keyboard=strings.main_keyboard)
-    elif message not in strings.main_commands:
+    if message not in strings.main_commands:
         bot.send_message(id, 'Команда не найдена, выбери из списка😉', keyboard=strings.main_keyboard)
     else:
         if message == 'найти товар':
@@ -26,7 +29,7 @@ def main_menu(bot, id, message):
 
 
 def search(bot, id, message):
-    global USERS, TEMP_SEARCH_RESULTS
+    global USERS, TEMP_SEARCH_RESULTS, SEARCH_QUERY
     message = message.lower()
     resp = loads(get('http://e-apteka.md/ajax/search_products.php?query=' + message).text)['data']
     if not resp:
@@ -34,6 +37,7 @@ def search(bot, id, message):
     else:
         USERS[id] = choice
         s = strings.search_results_header.format(message)
+        SEARCH_QUERY[id] = message
         for i, n in enumerate((i['name'] for i in resp), 1):
             s += '{}) {}\n'.format(i, n)
         s += strings.search_results_bottom
@@ -41,27 +45,39 @@ def search(bot, id, message):
         bot.send_message(id, s)
 
 
-def parse_info(name):
+def parse_info(bot, id, name):
+    global USERS, SELECTED_ITEM
     product = html.fromstring(get('http://e-apteka.md/products?keyword=' + name).text).xpath('//div[@class="product"]')[0]
     image = product.xpath('./div[@class="image"]/a/@href')
-    print(image)
     try:
-        producer = product.xpath('./div[@style="width:245px;height:106px;float:left;"]/br')[1]
+        price = strings.price.format(product.xpath('.//table[@style="font: 15px arial;"]//span[@class="price"]/text()')[0])
     except:
-        producer = None
-    print(producer)
-    active = product.xpath('./div[@class="description yobject-marked"]/text()')
-    print(active)
+        price = strings.out_of_stock
+    # отправить фото
+    s = '{}\n\n{}'.format(name, price)
+    bot.send_photo(id, image, s, keyboard=strings.to_cart_keyboard)
+    SELECTED_ITEM[id] = name
+    USERS[id] = item_info
 
+def item_info(bot, id, message):
+    global USERS, CART, SEARCH_QUERY
+    if message.lower() == 'добавить':
+        if not CART[id]:
+            CART[id] = []
+        CART[id].append(SELECTED_ITEM[id])
+        print(CART)
+    else:
+        USERS[id] = search
+        USERS[id](bot, id, SEARCH_QUERY[id])
 
 def choice(bot, id, message):
     global TEMP_SEARCH_RESULTS
     if not message.strip().isdigit():
         bot.send_message(id, strings.not_a_number)
-    elif not 0 <= int(message) < len(TEMP_SEARCH_RESULTS[id]):
+    elif not 0 <= int(message) <= len(TEMP_SEARCH_RESULTS[id]):
         bot.send_message(id, strings.wrong_range)
     else:
-        parse_info(TEMP_SEARCH_RESULTS[id][int(message)]['name'])
+        parse_info(bot, id, TEMP_SEARCH_RESULTS[id][int(message) - 1]['name'])
         # USERS[id] = item_info
         # Показать инфу
 
@@ -78,12 +94,12 @@ def start(bot):
         id = update['message']['from']['id']
         if id not in USERS:
             USERS[id] = main_menu
-        else:
-            try:
-                text = update['message']['text']
-                USERS[id](bot, id, text)
-            except KeyError:
-                bot.forward_message(MY_ID, update['message']['chat']['id'], update['message']['message_id'])
+        try:
+            text = update['message']['text']
+            USERS[id](bot, id, text)
+        except KeyError as e:
+            bot.forward_message(MY_ID, update['message']['chat']['id'], update['message']['message_id'])
+            bot.error(update)
 
 
 if __name__ == '__main__':

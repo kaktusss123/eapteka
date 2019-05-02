@@ -37,6 +37,13 @@ class BotHandler:
         resp = requests.post(self.api_url + method, params)
         return resp
 
+    def send_photo(self, chat_id, photo, caption, keyboard=None):
+        params = {'chat_id': chat_id, 'photo': photo, 'caption': caption, 'reply_markup': keyboard}
+        method = 'sendPhoto'
+        resp = requests.post(self.api_url + method, params)
+        return resp 
+
+
     def forward_message(self, chat_id, from_chat_id, message_id, disable_notification=False):
         """
         Method for forwarding messages user2user
