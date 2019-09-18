@@ -85,10 +85,11 @@ def show_info(msg):
     if not places or not prices:
         bot.send_message(msg.chat.id, no_results)
         stage[msg.chat.id] = 'search'
+        return
     s = search_results_text.format(
         search_results[msg.chat.id][int(msg.text) - 1])
     for pair in zip(places, prices):
-        s += '{:75} {}\n'.format(pair[0].strip(), pair[1].strip())
+        s += '{:70} {}\n'.format(pair[0].strip(), pair[1].strip())
     bot.send_message(msg.chat.id, s)
     bot.send_message(msg.chat.id, hello_3)
     stage[msg.chat.id] = 'search'
