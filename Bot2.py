@@ -35,7 +35,7 @@ def make_city_keyboard():
     return markup
 
 
-@bot.message_handler(commands=['start', 'help'], func=lambda x: not x in cities)
+@bot.message_handler(commands=['start', 'help'])
 def start(msg):
     log.info(str(msg.chat.id) + ' started messaging')
     if not cities.get(msg.chat.id):
@@ -49,6 +49,11 @@ def start(msg):
         bot.send_message(msg.chat.id, hello_3,
                          reply_markup=types.ReplyKeyboardRemove())
         stage[msg.chat.id] = 'search'
+
+
+@bot.message_handler(func=lambda x: not x in cities)
+def first_message(msg):
+    start(msg)
 
 
 @bot.message_handler(func=lambda x: x.text.lower() in cities_list.lower().split(','))
