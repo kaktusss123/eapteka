@@ -8,7 +8,8 @@ from requests import get
 from json import loads
 import logging as log
 
-log.basicConfig(format = u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level = log.DEBUG)
+log.basicConfig(
+    format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level=log.DEBUG)
 
 cfg = ConfigParser()
 cfg.read('config.ini')
@@ -51,15 +52,15 @@ def start(msg):
         stage[msg.chat.id] = 'search'
 
 
-@bot.message_handler(func=lambda x: not x in cities)
-def first_message(msg):
-    start(msg)
-
-
 @bot.message_handler(func=lambda x: x.text.lower() in cities_list.lower().split(','))
 def write_city(msg):
     log.info('{} selected {} as a city'.format(msg.chat.id, msg.text))
     cities[msg.chat.id] = msg.text.lower().capitalize()
+    start(msg)
+
+
+@bot.message_handler(func=lambda x: not x in cities)
+def first_message(msg):
     start(msg)
 
 
