@@ -9,8 +9,8 @@ from json import loads
 cfg = ConfigParser()
 cfg.read('config.ini')
 
-apihelper.proxy = {
-    'https': 'https://{}:{}'.format(cfg['Bot']['host'], cfg['Bot']['port'])}
+# apihelper.proxy = {
+#     'https': 'https://{}:{}'.format(cfg['Bot']['host'], cfg['Bot']['port'])}
 bot = telebot.TeleBot(cfg['Bot']['token'])
 
 cities = {}
