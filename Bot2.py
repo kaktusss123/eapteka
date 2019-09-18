@@ -106,10 +106,12 @@ def else_(msg):
     bot.send_message(msg.chat.id, not_resolved)
 
 
-def start():
+def run():
     try:
         log.info('Bot started')
         bot.polling()
     except:
-        log.exception()
+        log.exception('Че-то не то')
         start()
+
+run()
