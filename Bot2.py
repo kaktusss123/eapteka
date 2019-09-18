@@ -8,7 +8,7 @@ from requests import get
 from json import loads
 import logging as log
 
-log.basicConfig(format = u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level = logging.DEBUG)
+log.basicConfig(format = u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level = log.DEBUG)
 
 cfg = ConfigParser()
 cfg.read('config.ini')
