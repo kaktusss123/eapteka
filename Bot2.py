@@ -75,7 +75,7 @@ def search(msg):
 def show_info(msg):
     log.debug('{} selected number {}'.format(msg.chat.id, msg))
     page = fs(get(cfg['eapteka']['info'].format(
-        search_results[msg.chat.id][int(msg.text) - 1], cities[msg.chat.id] if cities[msg.chat.id] in cfg['eapteka']['cities'].split(',') else all_cities)).text)
+        search_results[msg.chat.id][int(msg.text) - 1], cities[msg.chat.id] if cities[msg.chat.id] in cities_list.split(',') else all_cities)).text)
     places = page.xpath('//table[@id="spravka"]//tr/td[5]/a/text()')
     prices = page.xpath('//table[@id="spravka"]//tr/td[4]/text()')
     s = search_results_text.format(
