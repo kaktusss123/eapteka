@@ -10,6 +10,8 @@ from json import loads
 cfg = ConfigParser()
 cfg.read('config.ini')
 
+cities_list = 'Бендеры,Тирасполь,Григориополь,Днестровск,Дубоссары,Каменка,Рыбница,Слободзея,Новотираспольский'
+
 # apihelper.proxy = {
 #     'https': 'https://{}:{}'.format(cfg['Bot']['host'], cfg['Bot']['port'])}
 bot = telebot.TeleBot(cfg['Bot']['token'])
@@ -21,7 +23,7 @@ search_results = {}
 
 def make_city_keyboard():
     markup = types.ReplyKeyboardMarkup()
-    c = cfg['eapteka']['cities'].split(',')
+    c = cities_list.split(',')
     buttons = [types.KeyboardButton(x) for x in c]
     markup.row(*buttons[:3])
     markup.row(*buttons[3:6])
