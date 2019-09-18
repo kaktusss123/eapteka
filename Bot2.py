@@ -5,9 +5,6 @@ from strings2 import *
 from lxml.html import fromstring as fs
 from requests import get
 from json import loads
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 cfg = ConfigParser()
 cfg.read('config.ini')
