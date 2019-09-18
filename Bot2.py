@@ -53,7 +53,7 @@ def start(msg):
 
 @bot.message_handler(func=lambda x: x.text in cities_list.split(','))
 def write_city(msg):
-    log.info('{} selected {} as a city'.format(msg.chat.id, cities[msg.chat.id]))
+    log.info('{} selected {} as a city'.format(msg.chat.id, msg.text))
     cities[msg.chat.id] = msg.text
     start(msg)
 
