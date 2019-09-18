@@ -1,3 +1,4 @@
+# coding: utf8
 import telebot
 from telebot import apihelper, types
 from configparser import ConfigParser
