@@ -59,11 +59,6 @@ def write_city(msg):
     start(msg)
 
 
-@bot.message_handler(func=lambda x: not x in cities)
-def first_message(msg):
-    start(msg)
-
-
 @bot.message_handler(func=lambda x: stage.get(x.chat.id) == 'search')
 def search(msg):
     log.debug('{} is searching for {}'.format(msg.chat.id, msg.text))
@@ -97,6 +92,11 @@ def show_info(msg):
     bot.send_message(msg.chat.id, s)
     bot.send_message(msg.chat.id, hello_3)
     stage[msg.chat.id] = 'search'
+
+
+@bot.message_handler(func=lambda x: not x in cities)
+def first_message(msg):
+    start(msg)
 
 
 @bot.message_handler(func=lambda x: True)
