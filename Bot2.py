@@ -6,6 +6,9 @@ from strings2 import *
 from lxml.html import fromstring as fs
 from requests import get
 from json import loads
+import logging as log
+
+log.basicConfig(format = u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s', level = logging.DEBUG)
 
 cfg = ConfigParser()
 cfg.read('config.ini')
@@ -22,6 +25,7 @@ search_results = {}
 
 
 def make_city_keyboard():
+    log.debug('Making keyboard')
     markup = types.ReplyKeyboardMarkup()
     c = cities_list.split(',')
     buttons = [types.KeyboardButton(x) for x in c]
@@ -31,27 +35,32 @@ def make_city_keyboard():
     return markup
 
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start', 'help'], func=lambda x: not x in cities)
 def start(msg):
+    log.info(str(msg.chat.id) + ' started messaging')
     if not cities.get(msg.chat.id):
+        log.debug('No city specified for {}'.format(msg.chat.id))
         bot.send_message(msg.chat.id, hello_1)
         bot.send_message(msg.chat.id, hello_2)
         bot.send_message(msg.chat.id, ask_cities,
                          reply_markup=make_city_keyboard())
     else:
+        log.debug('City for {} is {}'.format(msg.chat.id, cities[msg.chat.id]))
         bot.send_message(msg.chat.id, hello_3,
                          reply_markup=types.ReplyKeyboardRemove())
         stage[msg.chat.id] = 'search'
 
 
-@bot.message_handler(func=lambda x: x.chat.id not in cities)
+@bot.message_handler(func=lambda x: x.text in cities_list.split(','))
 def write_city(msg):
+    log.info('{} selected {} as a city'.format(msg.chat.id, cities[msg.chat.id]))
     cities[msg.chat.id] = msg.text
     start(msg)
 
 
 @bot.message_handler(func=lambda x: stage.get(x.chat.id) == 'search')
 def search(msg):
+    log.debug('{} is searching for {}'.format(msg.chat.id, msg.text))
     suggestions = get(cfg['eapteka']['base'].format(
         msg.text)).json()['suggestions']
     s = select_number + '\n\n'
@@ -64,6 +73,7 @@ def search(msg):
 
 @bot.message_handler(func=lambda x: x.text.strip().isdigit() and stage[x.chat.id] == 'show_info' and 0 < int(x.text) <= len(search_results[x.chat.id]))
 def show_info(msg):
+    log.debug('{} selected number {}'.format(msg.chat.id, msg))
     page = fs(get(cfg['eapteka']['info'].format(
         search_results[msg.chat.id][int(msg.text) - 1], cities[msg.chat.id] if cities[msg.chat.id] in cfg['eapteka']['cities'].split(',') else all_cities)).text)
     places = page.xpath('//table[@id="spravka"]//tr/td[5]/a/text()')
@@ -79,7 +89,9 @@ def show_info(msg):
 
 @bot.message_handler(func=lambda x: True)
 def else_(msg):
+    log.debug('{} sent something wrong: {}'.format(msg.chat.id, msg.text))
     bot.send_message(msg.chat.id, not_resolved)
 
 
+log.info('Bot started')
 bot.polling()
