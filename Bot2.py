@@ -43,7 +43,7 @@ def start(msg):
         stage[msg.chat.id] = 'search'
 
 
-@bot.message_handler(func=lambda x: x.chat.id not in cities)
+@bot.message_handler(func=lambda x: x.chat.id not in cities and x.text in cities_list.split(','))
 def write_city(msg):
     cities[msg.chat.id] = msg.text
     start(msg)
