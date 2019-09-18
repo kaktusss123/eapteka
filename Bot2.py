@@ -51,10 +51,10 @@ def start(msg):
         stage[msg.chat.id] = 'search'
 
 
-@bot.message_handler(func=lambda x: x.text in cities_list.split(','))
+@bot.message_handler(func=lambda x: x.text.lower() in cities_list.lower().split(','))
 def write_city(msg):
     log.info('{} selected {} as a city'.format(msg.chat.id, msg.text))
-    cities[msg.chat.id] = msg.text
+    cities[msg.chat.id] = msg.text.lower().capitalize()
     start(msg)
 
 
@@ -81,6 +81,9 @@ def show_info(msg):
         search_results[msg.chat.id][int(msg.text) - 1], cities[msg.chat.id] if cities[msg.chat.id] in cities_list.split(',') else all_cities)).text)
     places = page.xpath('//table[@id="spravka"]//tr/td[5]/a/text()')
     prices = page.xpath('//table[@id="spravka"]//tr/td[4]/text()')
+    if not places or not prices:
+        bot.send_message(msg.chat.id, no_results)
+        stage[msg.chat.id] = 'search'
     s = search_results_text.format(
         search_results[msg.chat.id][int(msg.text) - 1])
     for pair in zip(places, prices):
