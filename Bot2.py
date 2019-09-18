@@ -71,7 +71,7 @@ def search(msg):
     stage[msg.chat.id] = 'show_info'
 
 
-@bot.message_handler(func=lambda x: x.text.strip().isdigit() and stage[x.chat.id] == 'show_info' and 0 < int(x.text) <= len(search_results.get(x.chat.id, 0)))
+@bot.message_handler(func=lambda x: x.text.strip().isdigit() and stage.get(x.chat.id) == 'show_info' and 0 < int(x.text) <= len(search_results.get(x.chat.id, 0)))
 def show_info(msg):
     log.debug('{} selected number {}'.format(msg.chat.id, msg))
     page = fs(get(cfg['eapteka']['info'].format(
