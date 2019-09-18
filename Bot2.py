@@ -62,7 +62,10 @@ def write_city(msg):
 def search(msg):
     log.debug('{} is searching for {}'.format(msg.chat.id, msg.text))
     suggestions = get(cfg['eapteka']['base'].format(
-        msg.text)).json()['suggestions']
+        msg.text)).json().get('suggestions')
+    if not suggestions:
+        bot.send_message(msg.chat.id, no_suggestions)
+        return
     s = select_number + '\n\n'
     for pair in enumerate(suggestions, 1):
         s += "{}) {}\n".format(*pair)
@@ -73,7 +76,7 @@ def search(msg):
 
 @bot.message_handler(func=lambda x: x.text.strip().isdigit() and stage.get(x.chat.id) == 'show_info' and 0 < int(x.text) <= len(search_results.get(x.chat.id, 0)))
 def show_info(msg):
-    log.debug('{} selected number {}'.format(msg.chat.id, msg))
+    log.debug('{} selected number {}'.format(msg.chat.id, msg.text))
     page = fs(get(cfg['eapteka']['info'].format(
         search_results[msg.chat.id][int(msg.text) - 1], cities[msg.chat.id] if cities[msg.chat.id] in cities_list.split(',') else all_cities)).text)
     places = page.xpath('//table[@id="spravka"]//tr/td[5]/a/text()')
